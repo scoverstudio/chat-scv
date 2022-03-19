@@ -37,6 +37,8 @@ const sendMessage = (e) => {
   if (messageContentInput.value) {
     addMessage(userName, messageContentInput.value);
     messageContentInput.value = "";
+  } else {
+    alert("Message field required");
   }
 };
 
