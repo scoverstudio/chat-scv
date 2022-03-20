@@ -30,17 +30,17 @@ io.on("connection", (socket) => {
   });
   socket.on("join", (user) => {
     users.push(user);
-    console.log(user);
     socket.broadcast.emit("newUser", user);
   });
 
   socket.on("disconnect", () => {
     const disconnectedUser = users.find((el) => el.id === socket.id);
-    console.log(disconnectedUser);
-    socket.broadcast.emit("removeUser", disconnectedUser);
+    const indexOfDisconnectedUser = users.findIndex(
+      (el) => el.id === socket.id
+    );
 
-    const index = users.findIndex((el) => el.id === socket.id);
-    users.splice(index, 1);
+    socket.broadcast.emit("removeUser", disconnectedUser);
+    users.splice(indexOfDisconnectedUser, 1);
     console.log("Oh, socket " + socket.id + " has left");
   });
 
