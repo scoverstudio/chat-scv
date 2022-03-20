@@ -1,3 +1,5 @@
+const socket = io();
+
 const loginForm = document.getElementById("welcome-form");
 const messagesSection = document.getElementById("messages-section");
 const messagesList = document.getElementById("messages-list");
@@ -15,6 +17,10 @@ const login = (e) => {
     messagesSection.classList.add("show");
   } else {
     alert("userName field required");
+  }
+
+  if (userName) {
+    socket.emit("join", { name: userName, id: socket.id });
   }
 };
 
@@ -34,14 +40,25 @@ const addMessage = (author, content) => {
 
 const sendMessage = (e) => {
   e.preventDefault();
+
+  let messageContent = messageContentInput.value;
+
   if (messageContentInput.value) {
-    addMessage(userName, messageContentInput.value);
+    addMessage(userName, messageContent);
+    socket.emit("message", { author: userName, content: messageContent });
+
     messageContentInput.value = "";
   } else {
     alert("Message field required");
   }
 };
 
-console.log(loginForm);
+socket.on("message", ({ author, content }) => addMessage(author, content));
+socket.on("newUser", ({ name }) => {
+  addMessage("chatBot", `${name} has joined the conversation!`);
+});
+socket.on("removeUser", ({ name }) => {
+  addMessage("chatBot", `${name} has left the conversation... :(`);
+});
 loginForm.addEventListener("submit", login);
 addMessageForm.addEventListener("submit", sendMessage);
